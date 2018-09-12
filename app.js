@@ -1,6 +1,10 @@
-const   express   = require('express'),
-        app       = express(),
-        db        = require('./db');
+const express = require('express'),
+    app = express(),
+    db = require('./db'),
+    bodyParser = require("body-parser");
+
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 
 
 // const query = query => {
@@ -23,10 +27,38 @@ var allowCrossDomain = function(req, res, next) {
 
 app.use(allowCrossDomain);
 
-// ROUTES START
-
+//=================== ROUTES START
 app.get('/', (req, res) => {
-    db.get().query('SELECT * FROM clients', (err, results) => {
+    res.send('INDEX ROUTE')
+});
+
+//OWNERS ROUTE START
+app.get('/owner', (req, res) => {
+    db.sql().query('SELECT * FROM owner', (err, results) => {
+        if (err) {
+            return console.error(err);
+        }
+        res.send(results)
+    })
+});
+app.post('/owner', async(req, res) => {
+    const fname = req.body.fname;
+    const lname = req.body.lname;
+    const age = req.body.age;
+
+    db.sql().query(`INSERT INTO owner(fname, lname, age) VALUES('${fname}', '${lname}', ${age})`, (err1, InsertResults) => {
+        db.sql().query('SELECT * FROM owner', (err2, results) => {
+            if (err1 || err2) {
+                return console.error(err1 || err2);
+            }
+            res.send(results);
+        });
+    });
+});
+//OWNERS ROUTE END
+
+app.get('/tenant', (req, res) => {
+    db.sql().query('SELECT * FROM tenant', (err, results) => {
         if (err) {
             return console.error(err);
         }
@@ -34,24 +66,25 @@ app.get('/', (req, res) => {
     })
 });
 
-app.get('/:name', (req, res) => {
-    db.get().query(`SELECT * FROM clients where name = '${req.params.name}'`, (err, results) => {
-        if (err) {
-            return console.error(err);
-        }
-        res.send(results)
-    });
-});
 
-// ROUTES END
+// app.get('/:name', (req, res) => {
+//     db.get().query(`SELECT * FROM clients where name = '${req.params.name}'`, (err, results) => {
+//         if (err) {
+//             return console.error(err);
+//         }
+//         res.send(results)
+//     });
+// });
+
+//=================== ROUTES END
 
 
-db.connect(function (err) {
+db.connect(function(err) {
     if (err) {
         console.log('Unable to connect to MySQL.')
         process.exit(1)
     } else {
-        app.listen(3000, function () {
+        app.listen(3000, function() {
             console.log('Server is listening on port 3000...')
         })
     }

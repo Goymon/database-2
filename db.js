@@ -3,17 +3,17 @@ var mysql = require('mysql')
 
 var pool = null;
 
-exports.connect = function (done) {
+exports.connect = function(done) {
     pool = mysql.createPool({
         host: 'mysql.stackcp.com',
-        port: '51019',
-        user: 'kendev',
-        password: 'sample2018',
-        database: 'clients-32375ac5'
+        port: '51076',
+        user: 'pogingpogi',
+        password: 'database2',
+        database: 'property-management-363999ef'
     })
     done();
 }
 
-exports.get = function () {
+exports.sql = function() {
     return pool
 }
