@@ -34,12 +34,7 @@ app.get('/', (req, res) => {
 
 //OWNERS ROUTE START
 app.get('/owner', (req, res) => {
-    db.sql().query('SELECT * FROM owner', (err, results) => {
-        if (err) {
-            return console.error(err);
-        }
-        res.send(results)
-    })
+    getTable('owner', res);
 });
 app.post('/owner', async(req, res) => {
     const fname = req.body.fname;
@@ -47,24 +42,58 @@ app.post('/owner', async(req, res) => {
     const age = req.body.age;
 
     db.sql().query(`INSERT INTO owner(fname, lname, age) VALUES('${fname}', '${lname}', ${age})`, (err1, InsertResults) => {
-        db.sql().query('SELECT * FROM owner', (err2, results) => {
-            if (err1 || err2) {
-                return console.error(err1 || err2);
-            }
-            res.send(results);
-        });
+        getTable('owner', res);
     });
 });
 //OWNERS ROUTE END
 
-app.get('/tenant', (req, res) => {
-    db.sql().query('SELECT * FROM tenant', (err, results) => {
-        if (err) {
-            return console.error(err);
-        }
-        res.send(results)
-    })
+//PROPERTY TYPE ROUTE START
+app.get('/property-type', (req, res) => {
+    getTable('propertytype', res);
 });
+app.post('/property-type', async (req, res) => {
+    const type = req.body.type;
+
+    db.sql().query(`INSERT INTO propertytype(type) VALUES('${type}')`, (err1, InsertResults) => {
+        getTable('propertytype', res);
+    });
+});
+//PROPERTY TYPE ROUTE END
+
+//PROPERTY ROUTE START
+app.get('/property', (req, res) => {
+    getTable('properties', res);
+});
+app.post('/property', async (req, res) => {
+    const type = req.body.type,
+          owner = req.body.owner,
+          size = req.body.size,
+          noofbedrooms = req.body.noofbedrooms,
+          noofbathrooms = req.body.noofbathrooms,
+          rate = req.body.rate;
+
+    db.sql().query(`INSERT INTO property(propertytype_id, owner_id, size, no_ofbedrooms, no_ofbathrooms, rate) VALUES('${type}', '${owner}', '${size}', '${noofbedrooms}', '${noofbathrooms}', '${rate}')`, (err1, InsertResults) => {
+        getTable('properties', res);
+    });
+});
+//PROPERTY ROUTE END
+
+//PROPERTY ROUTE START
+app.get('/tenant', (req, res) => {
+    getTable('tenant', res);
+});
+app.post('/tenant', async (req, res) => {
+    const fname = req.body.fname,
+          lname = req.body.lname,
+          age = req.body.age,
+          marital_status = req.body.marital_status,
+          occupation = req.body.occupation;
+
+    db.sql().query(`INSERT INTO tenant(fname, lname, age, marital_status, occupation) VALUES('${fname}', '${lname}', ${age}, '${marital_status}', '${occupation}')`, (err1, InsertResults) => {
+        getTable('tenant', res);
+    });
+});
+//PROPERTY ROUTE END
 
 
 // app.get('/:name', (req, res) => {
@@ -89,3 +118,15 @@ db.connect(function(err) {
         })
     }
 });
+
+
+// FUNCTIONS 
+
+function getTable(tableName, res) {
+    db.sql().query(`SELECT * FROM ${tableName}`, (err, results) => {
+        if (err) {
+            return console.error(err);
+        }
+        res.send(results);
+    });
+}

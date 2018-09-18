@@ -6,9 +6,9 @@ var pool = null;
 exports.connect = function(done) {
     pool = mysql.createPool({
         host: 'mysql.stackcp.com',
-        port: '51076',
+        port: '51001',
         user: 'pogingpogi',
-        password: 'database2',
+        password: 'databasetwo2',
         database: 'property-management-363999ef'
     })
     done();
